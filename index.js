@@ -24,37 +24,59 @@ function plotGraph(usEducationalData, usCountryData) {
 
   const path = d3.geoPath();
   
-    svg
-      .selectAll("path")
-      .data(counties)
-      .enter()
-      .append("path")
-      .attr("d", path)
-      .attr("class", "county")
-      .style("fill", "lightblue")
-      .style("stroke", "#333")
-      .style("stroke-width", 0.5);
-    //   .attr("r", 6)
-    //   .attr("class", "dot")
-    //   .style("stroke", "#555")
-    //   .style("stroke-width", "1")
-    //   .style("opacity", "90%")
-    //   .attr("data-xvalue", (d) => d.Year)
-    //   .attr("data-yvalue", (d) => new Date(d.Seconds * 1000))
-    //   .attr("fill", (d) => (d.Doping === "" ? "#3d348b" : "#f35b04"))
-    //   .on("mouseover", (event, d) => {
-    //     tooltip
-    //       .attr("data-year", event.target.dataset.xvalue)
-    //       .style("visibility", "visible")
-    //       .html(`${d.Name}: ${d.Nationality}<br>Year: ${d.Year}, Time: ${d.Time}`)
-    //       .style("font-family", "sans-serif")
-    //       .style("font-size", "12px")
-    //       .style("left", event.pageX + 20 + "px")
-    //       .style("top", event.pageY - 30 + "px");
-    //   })
-    //   .on("mouseout", (d) => {
-    //     tooltip.style("visibility", "hidden");
-    //   });
+  svg
+    .selectAll("path")
+    .data(counties)
+    .enter()
+    .append("path")
+    .attr("d", path)
+    .attr("class", "county")
+    .style("stroke", "#333")
+    .style("stroke-width", 0.5)
+    .style("fill", (d, i) => {
+      const data = usEducationalData.find(g => g.fips === d.id);
+
+      const percentage = data.bachelorsOrHigher;
+
+      if(percentage <= 15) {
+        return "blue"
+      }
+      else if(percentage > 15 && percentage < 30) {
+        return "red"
+      }
+      else if(percentage > 30 && percentage < 45) {
+        return "green"
+      }
+      else {
+        return "purple"
+      }
+
+    })
+    .attr("data-fips", d => d.id)
+    .attr("data-education", d => {
+      const data = usEducationalData.find(g => g.fips === d.id);
+      return data.bachelorsOrHigher;
+
+    })
+  //   .style("stroke", "#555")
+  //   .style("stroke-width", "1")
+  //   .style("opacity", "90%")
+  //   .attr("data-xvalue", (d) => d.Year)
+  //   .attr("data-yvalue", (d) => new Date(d.Seconds * 1000))
+  //   .attr("fill", (d) => (d.Doping === "" ? "#3d348b" : "#f35b04"))
+  //   .on("mouseover", (event, d) => {
+  //     tooltip
+  //       .attr("data-year", event.target.dataset.xvalue)
+  //       .style("visibility", "visible")
+  //       .html(`${d.Name}: ${d.Nationality}<br>Year: ${d.Year}, Time: ${d.Time}`)
+  //       .style("font-family", "sans-serif")
+  //       .style("font-size", "12px")
+  //       .style("left", event.pageX + 20 + "px")
+  //       .style("top", event.pageY - 30 + "px");
+  //   })
+  //   .on("mouseout", (d) => {
+  //     tooltip.style("visibility", "hidden");
+  //   });
   
   
   
