@@ -11,10 +11,46 @@ const barColor = "#607EAA";
 const barWidth = 100;
 const selectionColor = "#1C3879";
 
+const legendWidth = 400;
+const legendHeight = 50;
+const legendPadding = 50;
+
+const colors = [
+  "#e5f5e0",
+  "#c7e9c0",
+  "#a1d99b",
+  "#74c476",
+  "#41ab5d",
+  "#238b45",
+  "#006d2c",
+];
+
 function plotGraph(usEducationalData, usCountryData) {
   const counties = topojson.feature(usCountryData, usCountryData.objects.counties).features;
 
-  console.log(counties, usEducationalData);
+  console.log(usEducationalData)
+
+  const tooltip = d3.select("#tooltip");
+
+  const educationPercentageScale = d3
+    .scaleLinear()
+    .domain([2,66])
+    .range([0, colors.length - 1]);
+  
+  const legendScale1 = d3
+    .scaleBand()
+    .domain(colors.map((_c, i) => i))
+    .range([legendPadding, legendWidth - legendPadding]);
+
+  const legendScale2 = d3
+    .scaleLinear()
+    .domain([0, colors.length - 1])
+    .range([legendPadding, legendWidth - legendPadding]);
+
+  const legendScale3 = d3
+    .scaleLinear()
+    .domain([0, colors.length - 1])
+    .range([2.8, 12.8]);
   
   const svg = d3
     .select("#container")
@@ -31,26 +67,12 @@ function plotGraph(usEducationalData, usCountryData) {
     .append("path")
     .attr("d", path)
     .attr("class", "county")
-    .style("stroke", "#333")
+    .style("stroke", "white")
     .style("stroke-width", 0.5)
     .style("fill", (d, i) => {
       const data = usEducationalData.find(g => g.fips === d.id);
-
       const percentage = data.bachelorsOrHigher;
-
-      if(percentage <= 15) {
-        return "blue"
-      }
-      else if(percentage > 15 && percentage < 30) {
-        return "red"
-      }
-      else if(percentage > 30 && percentage < 45) {
-        return "green"
-      }
-      else {
-        return "purple"
-      }
-
+      return colors[Math.floor(educationPercentageScale(percentage))];
     })
     .attr("data-fips", d => d.id)
     .attr("data-education", d => {
@@ -58,104 +80,60 @@ function plotGraph(usEducationalData, usCountryData) {
       return data.bachelorsOrHigher;
 
     })
-  //   .style("stroke", "#555")
-  //   .style("stroke-width", "1")
-  //   .style("opacity", "90%")
-  //   .attr("data-xvalue", (d) => d.Year)
-  //   .attr("data-yvalue", (d) => new Date(d.Seconds * 1000))
-  //   .attr("fill", (d) => (d.Doping === "" ? "#3d348b" : "#f35b04"))
-  //   .on("mouseover", (event, d) => {
-  //     tooltip
-  //       .attr("data-year", event.target.dataset.xvalue)
-  //       .style("visibility", "visible")
-  //       .html(`${d.Name}: ${d.Nationality}<br>Year: ${d.Year}, Time: ${d.Time}`)
-  //       .style("font-family", "sans-serif")
-  //       .style("font-size", "12px")
-  //       .style("left", event.pageX + 20 + "px")
-  //       .style("top", event.pageY - 30 + "px");
-  //   })
-  //   .on("mouseout", (d) => {
-  //     tooltip.style("visibility", "hidden");
-  //   });
+    .on("mouseover", (event, d) => {
+      const pathElement = event.target;
+
+      const { area_name, state, bachelorsOrHigher } = usEducationalData.find(g => g.fips === d.id);
+
+      tooltip
+        .attr("data-education", bachelorsOrHigher)
+        .style("visibility", "visible")
+        .text(`${area_name} - ${state}: ${bachelorsOrHigher}%`)
+        .style("font-family", "sans-serif")
+        .style("font-size", "12px")
+        .style("left", event.pageX + 20 + "px")
+        .style("top", event.pageY - 30 + "px");
+    })
+    .on("mouseout", (event) => {
+      const rectElement = event.target;
+      tooltip.style("visibility", "hidden");
+    });
+ 
   
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
+  const legend = d3
+    .select("#legend")
+      .append("svg")
+      .attr("width", legendWidth)
+      .attr("height", legendHeight);
 
-  // const tooltip = d3.select("#tooltip");
+  legend
+    .selectAll("rect")
+    .data(colors)
+    .enter()
+    .append("rect")
+    .attr("x", (_d, i) => legendScale1(i))
+    .attr("y", 0)
+    .attr("width", legendScale1.bandwidth())
+    .attr("height", 30)
+    .attr("fill", (d) => d);
 
-  // const xScale = d3
-  //   .scaleLinear()
-  //   .domain([d3.min(data, (d) => d.Year) - 1, d3.max(data, (d) => d.Year) + 1])
-  //   .range([padding, plotWidth - padding]);
+  const legendAxis = d3
+    .axisBottom(legendScale2)
+    .tickValues(d3.range(0, colors.length))
+    .tickFormat((d) => legendScale3(d).toFixed(1));
 
-  // const yScale = d3
-  //   .scaleLinear()
-  //   .domain([
-  //     d3.min(data, (d) => new Date(d.Seconds * 1000)),
-  //     d3.max(data, (d) => new Date(d.Seconds * 1000)),
-  //   ])
-  //   .range([padding, plotHeight - padding]);
+  legend
+    .append("g")
+    .attr("id", "legend-axis-axis")
+    .attr("transform", `translate(0, ${30})`)
+    .call(legendAxis);
 
-
-
-
-
-  // const projection = d3.geoAlbersUsa()
-  //   .scale(1000)
-  //   .translate([plotWidth / 2, plotHeight / 2]);
-
-  // const path = d3.geoPath().projection(projection);
-
-
-
-  // svg.selectAll(".county")
-  //       .data(counties.features)
-  //       .enter()
-  //       .append("path")
-  //       .attr("class", "county")
-  //       .attr("d", path);
-
-
-  // const xAxis = d3.axisBottom(xScale).tickFormat(d3.format("d"));
-
-  // const yAxis = d3.axisLeft(yScale).tickFormat(d3.timeFormat("%M:%S"));
-
-  // svg
-  //   .append("g")
-  //   .attr("id", "x-axis")
-  //   .attr("transform", `translate(0, ${plotHeight - padding})`)
-  //   .call(xAxis);
-
-  // svg
-  //   .append("g")
-  //   .attr("id", "y-axis")
-  //   .attr("transform", `translate(${padding}, 0)`)
-  //   .call(yAxis);
-
-  // svg
-  //   .append("text")
-  //   .attr("text-anchor", "middle")
-  //   .attr(
-  //     "transform",
-  //     `translate(${padding + 25}, ${plotHeight / 2}) rotate(-90)`
-  //   )
-  //   .text("Time in Minutes")
-  //   .style("font-family", "sans-serif")
-  //   .style("font-size", "12px");
+  legend
+    .append("text")
+    .attr("text-anchor", "middle")
+    .style("font-family", "sans-serif")
+    .style("font-size", "12px")
+    .text("Years");
 };
 
 async function init() {
