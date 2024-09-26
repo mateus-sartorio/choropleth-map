@@ -29,6 +29,7 @@ h2 {
   margin: auto auto;
   width: fit-content;
   position: relative;
+  padding-bottom: 30px;
 }
 
 #legend {
@@ -36,6 +37,19 @@ h2 {
   right: 80px;
   top: 0;
   margin: 0;
+}
+
+#source {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  margin: 0;
+}
+
+#source a {
+  font-weight: 400;
+  font-family: sans-serif;
+  text-decoration: none;
 }
 
 #tooltip {

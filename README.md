@@ -13,6 +13,6 @@
 
 <br>
 
-This project involves creating a scatterplot graph using D3.js, visualizing cyclist data from the provided JSON file. The graph displays various attributes, including year and race times, with interactive tooltips that provide detailed information upon hovering over each data point. The challenge emphasizes data visualization techniques, responsive design, and utilizing SVG elements effectively to present complex datasets clearly.
+This project involves creating a choropleth map using D3.js, visualizing U.S. educational attainment data from the provided JSON file. The map displays the percentage of adults with a bachelor's degree or higher across different counties, with color gradients representing various education levels. Interactive tooltips provide detailed information about each county upon hovering. The challenge focuses on data visualization techniques, using geographic data with TopoJSON, and effectively presenting information through color scales and responsive design.
 
 This project is the fourth challenge for the [Data Visualization certification](https://www.freecodecamp.org/learn/data-visualization) from freeCodeCamp and can be found [here](https://www.freecodecamp.org/learn/data-visualization/data-visualization-projects/visualize-data-with-a-choropleth-map).
